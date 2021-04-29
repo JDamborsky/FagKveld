@@ -1,0 +1,1 @@
+start /min cmd /c powershell -file "\\sikt\data\Felles Ressurser\Programmer\Like4Like\HvemErJeg\HvemErJeg.Export.ps1"
