@@ -1,3 +1,8 @@
+$form1_Load={
+	#TODO: Initialize Form Controls here
+	
+}
+
 function Get-AdsiPathForCurrentDomain
 {
 	$Root = [ADSI]"LDAP://RootDSE"
@@ -128,3 +133,62 @@ function Get-MachineInfoFromAD
 	
 }
 
+
+
+
+$textbox1_DragDrop=[System.Windows.Forms.DragEventHandler]{
+#Event Argument: $_ = [System.Windows.Forms.DragEventArgs]
+	#TODO: Place custom script here
+	[string[]]$TestVal = [string[]]$_.Data.GetData([Windows.Forms.DataFormats]::Text)
+	if ($TestVal)
+	{
+		$TestValArray = $TestVal.Split("`r`n")
+		foreach ($TestValItem in $TestValArray)
+		{
+			Write-Host "-$TestValItem-"
+			if ($TestValItem -ne "")
+			{
+				$Result += Get-MachineInfoFromAD -ClientNameToFind $($TestValItem.trim())
+			}
+		}
+		
+		If ($checkboxCSVFile.Checked -eq $true)
+		{
+			$Result.table | Export-Csv -Path .\PcList.csv -NoTypeInformation
+		}
+		
+		if ($checkboxHTMLReport.Checked -eq $true)
+		{
+			$Result.table | Select-object MachineName, operatingsystem, lastLogon, IsObjectEnabled | ConvertTo-Html | Out-File -FilePath .\PcList-Report.html
+			Invoke-Expression .\PcList-Report.html
+		}
+	}
+}
+
+$textbox1_DragOver=[System.Windows.Forms.DragEventHandler]{
+#Event Argument: $_ = [System.Windows.Forms.DragEventArgs]
+	#TODO: Place custom script here
+	if ($_.Data.GetDataPresent([Windows.Forms.DataFormats]::Text))
+	{
+		$_.Effect = 'Copy'
+	}
+	else
+	{
+		$_.Effect = 'None'
+	}
+}
+
+
+
+
+
+
+$checkboxCSVFile_CheckedChanged={
+	#TODO: Place custom script here
+	
+}
+
+$checkboxHTMLReport_CheckedChanged={
+	#TODO: Place custom script here
+	
+}
